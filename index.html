@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control de citas</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.3/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body class="body">
+    <div class="container">
+      <div class="header">
+        <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <h1 class="title">
+        </h1>
+        <p class="description">Ingrese fecha y hora </p>
+      </div>
+
+      <form class="form" id="reserva-form">
+        <input id="nombre" placeholder="Nombre del cliente" class="input" />
+        <input type="date" id="fecha" class="input" />
+        <input type="time" id="hora" class="input" />
+        <button type="button" class="button" id="crear-btn">
+          ➕ Agregar
+        </button>
+      </form>
+
+      <div class="reservations">
+        <h2 class="reservations-title">📋 Registros</h2>
+        <p class="reservations-empty" id="sin-reservas">No hay registros</p>
+        <ul id="lista-reservas" class="mt-2 space-y-2"></ul>
+      </div>
+    </div>
+
+    <script>
+      const lista = document.getElementById("lista-reservas");
+      const sinReservas = document.getElementById("sin-reservas");
+
+      // Función para guardar las reservas en localStorage
+      function guardarReserva(nombre, fecha, hora) {
+        const reserva = { nombre, fecha, hora };
+        const reservas = JSON.parse(localStorage.getItem("reservas")) || [];
+        reservas.push(reserva);
+        localStorage.setItem("reservas", JSON.stringify(reservas));
+      }
+
+      // Función para mostrar una reserva en la lista
+      function mostrarReserva({ nombre, fecha, hora }) {
+        const item = document.createElement("li");
+        item.className = "text-sm text-white bg-gray-700 p-2 rounded";
+        item.textContent = `${nombre} — ${fecha} a las ${hora}`;
+        lista.appendChild(item);
+      }
+
+      // Cargar reservas guardadas al iniciar
+      window.addEventListener("DOMContentLoaded", () => {
+        const reservas = JSON.parse(localStorage.getItem("reservas")) || [];
+        if (reservas.length > 0) {
+          sinReservas.style.display = "none";
+          reservas.forEach(mostrarReserva);
+        }
+      });
+
+      // Crear nueva reserva
+      document.getElementById("crear-btn").addEventListener("click", () => {
+        const nombre = document.getElementById("nombre").value.trim();
+        const fecha = document.getElementById("fecha").value;
+        const hora = document.getElementById("hora").value;
+
+        if (!nombre || !fecha || !hora) {
+          alert("Por favor completa todos los campos.");
+          return;
+        }
+
+        sinReservas.style.display = "none";
+
+        const nuevaReserva = { nombre, fecha, hora };
+        mostrarReserva(nuevaReserva);
+        guardarReserva(nombre, fecha, hora);
+
+        document.getElementById("nombre").value = "";
+        document.getElementById("fecha").value = "";
+        document.getElementById("hora").value = "";
+      });
+    </script>
+  </body>
+</html>
